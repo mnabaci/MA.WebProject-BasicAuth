@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MA.Dto\MA.Dto.csproj" />
     <ProjectReference Include="..\MA.Entity.Core\MA.Entity.Core.csproj" />
     <ProjectReference Include="..\MA.Service\MA.Service.csproj" />
   </ItemGroup>

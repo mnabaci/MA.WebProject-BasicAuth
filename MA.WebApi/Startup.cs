@@ -1,6 +1,8 @@
 ﻿using MA.Entity.Core.Context;
-using MA.Service;
+using MA.Service.User;
+using MA.WebApi.Configuration.Authantication;
 using MA.WebApi.Configuration.Extensions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -44,7 +46,7 @@ namespace MA.WebApi
             }
 
             // This is where our bindings are configurated
-            kernel.Bind<ITestService>().To<TestService>().InScope(RequestScope);
+            //kernel.Bind<IUserService>().To<UserService>().InScope(RequestScope);
 
             // Cross-wire required framework services
             kernel.BindToMethod(app.GetRequestService<IViewBufferScope>);
@@ -55,15 +57,20 @@ namespace MA.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IUserService, UserService>();
+            // configure basic authentication 
+            services.AddAuthentication("BasicAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
             services.AddRequestScopingMiddleware(() => this.scopeProvider.Value = new Scope()); 
             services.AddCustomControllerActivation(this.Resolve);
             services.AddCustomViewComponentActivation(this.Resolve);
 
-            services.AddDbContext<DefaultDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultDatabase")));
+            //services.AddDbContext<DefaultDbContext>(options =>
+            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultDatabase")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,7 +85,16 @@ namespace MA.WebApi
             {
                 app.UseHsts();
             }
+            
 
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }

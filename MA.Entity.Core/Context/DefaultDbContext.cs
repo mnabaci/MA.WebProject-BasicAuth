@@ -1,7 +1,8 @@
-﻿namespace MA.Entity.Core.Context
+﻿using MA.Entity.Model.Mapping.User;
+using MA.Entity.Model.Model.User;
+
+namespace MA.Entity.Core.Context
 {
-    using MA.Entity.Model.Mapping;
-    using MA.Entity.Model.Model;
 
     using Microsoft.EntityFrameworkCore;
 
@@ -17,10 +18,10 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new TestModelMapping());
+            modelBuilder.ApplyConfiguration(new UserModelMapping());
         }
 
 
-        public DbSet<TestModel> Students { get; set; }
+        public virtual DbSet<UserModel> Users { get; set; }
     }
 }

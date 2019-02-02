@@ -1,17 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MA.WebApi.Controllers
 {
-    using MA.Service;
-
+    [Authorize]
+    [ApiController]
     [Route("api/[controller]")]
     public class HomeController : Controller
     {
-        private readonly ITestService _testService;
-
-        public HomeController(ITestService testService)
+        public HomeController()
         {
-            this._testService = testService;
         }
 
         // GET: api/<controller>
@@ -25,7 +23,7 @@ namespace MA.WebApi.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            return this.Ok(this._testService.TestMethod());
+            return this.Ok();
         }
 
         // POST api/<controller>
